@@ -288,9 +288,6 @@ struct ImportStatementTemplate {
       @_exported import \(apolloAPITargetName)
       \(if: config.output.operations != .inSchemaModule, "import \(config.schemaModuleName)")
       \(forEachIn: config.additionalImportedModulesNames, {
-        guard config.output.operations != .inSchemaModule else {
-          return nil
-        }
         return "import \($0)"
       })
       """
