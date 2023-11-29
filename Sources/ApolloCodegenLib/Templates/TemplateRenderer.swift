@@ -287,6 +287,12 @@ struct ImportStatementTemplate {
       return """
       @_exported import \(apolloAPITargetName)
       \(if: config.output.operations != .inSchemaModule, "import \(config.schemaModuleName)")
+      \(forEachIn: config.additionalImportedModulesNames, {
+        guard config.output.operations != .inSchemaModule else {
+          return nil
+        }
+        return "import \($0)"
+      })
       """
     }
   }
@@ -306,6 +312,12 @@ fileprivate extension ApolloCodegenConfiguration {
     switch output.schemaTypes.moduleType {
     case let .embeddedInTarget(targetName, _): return targetName
     case .swiftPackageManager, .other: return schemaNamespace.firstUppercased
+    }
+  }
+  var additionalImportedModulesNames: [String] {
+    switch output.schemaTypes.moduleType {
+    case .embeddedInTarget: return []
+    case .swiftPackageManager, .other: return additionalImportedModuleNamespaces.map { $0.firstUppercased }
     }
   }
 }
